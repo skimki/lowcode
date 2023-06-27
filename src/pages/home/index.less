@@ -1,0 +1,51 @@
+.App {
+  display: flex;
+  align-items: stretch;
+  height: 100vh;
+  &-aside {
+    padding: 12px 0;
+    width: 60px;
+    background-color: #eee;
+    > div {
+      text-align: center;
+      font-size: 14px;
+      margin: 12px 0 20px;
+      cursor: default;
+    }
+  }
+  &-aside-content {
+    box-sizing: border-box;
+    width: 350px;
+    padding: 0 12px;
+    > .App-aside-component {
+      padding: 8px 0;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+      display: inline-block;
+      font-size: 14px;
+      width: 45%;
+      vertical-align: top;
+      background-color: #f4f6fc;
+      text-align: center;
+      &:nth-child(2n + 1) {
+        margin: 0 5% 0 0;
+      }
+    }
+  }
+  &-main {
+    flex: 1;
+    // border: 1;
+    border-left: 2px solid #e0e0e0;
+    border-right: 2px solid #e0e0e0;
+  }
+  &-preview {
+    height: 100%;
+    &-active {
+      box-shadow: 0 0 10px 4px rgba(0, 176, 176, 0.3);
+    }
+  }
+  &-right {
+    width: 350px;
+    padding-right: 12px;
+  }
+}

@@ -72,8 +72,8 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
-const lessRegex = /\\.(less)$/;
-const lessModuleRegex = /\\.module\\.less$/;
+const lessRegex = /\.(less)$/;
+const lessModuleRegex = /\.module\.less$/;
 
 const hasJsxRuntime = (() => {
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
@@ -109,6 +109,7 @@ module.exports = function (webpackEnv) {
 
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
+    console.log('xxxxxxx', preProcessor)
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -321,6 +322,7 @@ module.exports = function (webpackEnv) {
           'react-dom$': 'react-dom/profiling',
           'scheduler/tracing': 'scheduler/tracing-profiling',
         }),
+        '@': paths.appSrc,
         ...(modules.webpackAliases || {}),
       },
       plugins: [
@@ -504,28 +506,12 @@ module.exports = function (webpackEnv) {
                 },
               }),
             },
+            // Opt-in support for SASS (using .scss or .sass extensions).
+            // By default we support SASS Modules with the
+            // extensions .module.scss or .module.sass
             {
-              test: lessRegex,
-              // exclude: lessModuleRegex,
-              use: getStyleLoaders(
-                {
-                  importLoaders: 3,
-                  sourceMap: isEnvProduction
-                    ? shouldUseSourceMap
-                    : isEnvDevelopment,
-                },
-                'less-loader'
-              ),
-              // Don't consider CSS imports dead code even if the
-              // containing package claims to have no side effects.
-              // Remove this when webpack adds a warning or an error for this.
-              // See https://github.com/webpack/webpack/issues/6571
-              sideEffects: true,
-            },
-            // Adds support for CSS Modules, but using LESS
-            // using the extension .module.scss or .module.less
-            {
-              test: lessModuleRegex,
+              test: sassRegex,
+              exclude: sassModuleRegex,
               use: getStyleLoaders(
                 {
                   importLoaders: 3,
@@ -533,10 +519,68 @@ module.exports = function (webpackEnv) {
                     ? shouldUseSourceMap
                     : isEnvDevelopment,
                   modules: {
+                    mode: 'icss',
+                  },
+                },
+                'sass-loader'
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
+            },
+            // 添加 less 相关配置
+            {
+              test: lessRegex,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction
+                  ? shouldUseSourceMap
+                  : isEnvDevelopment,
+                },
+                'less-loader'
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See <https://github.com/webpack/webpack/issues/6571>
+              sideEffects: true,
+            },
+            // Adds support for CSS Modules, but using LESS
+            // using the extension .module.less or .module.less
+            {
+              test: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  modules: {
                     getLocalIdent: getCSSModuleLocalIdent,
+                    // localIdentName: '[local]_[hash:base64:5]'
                   },
                 },
                 'less-loader'
+              ),
+            },
+            // Adds support for CSS Modules, but using SASS
+            // using the extension .module.scss or .module.sass
+            {
+              test: sassModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 3,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                    modules: {
+                      mode: 'local',
+                      getLocalIdent: getCSSModuleLocalIdent,
+                    },
+                },
+                'sass-loader'
               ),
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
@@ -740,6 +784,7 @@ module.exports = function (webpackEnv) {
               ...(!hasJsxRuntime && {
                 'react/react-in-jsx-scope': 'error',
               }),
+              'no-mixed-operators': 'off'
             },
           },
         }),
