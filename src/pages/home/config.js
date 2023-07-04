@@ -9,8 +9,9 @@ function Config(props) {
     if (val && typeof val === 'object' && val.target && val.constructor.name === 'SyntheticBaseEvent') {
       val = val.target.value
     }
-    if (![Types.enum, Types.string, Types.number, Types.boolean].includes(type)) {
+    if (![Types.enum, Types.string, Types.number, Types.boolean, Types.any].includes(type)) {
       try {
+        // eslint-disable-next-line
         eval(`window.tempCodeVal = ${val}`)
         val = window.tempCodeVal
       } catch (e) {
@@ -21,30 +22,32 @@ function Config(props) {
   }
 
   const getConfigContentByType = (data, type) => {
-    let { values, propName } = data  
+    let { values, propName } = data
+    let key = `${props.element.key || props.element.type}_${propName}_${type}`
+    let value = (propName === '_children' ? props.element._children : props.element[propName]) || data.defaultValue
     if (type === Types.enum && values?.length) {
       return <Select
-        key={`${propName}_${type}`}
-        defaultValue={data.defaultValue}
+        key={key}
+        defaultValue={value}
         // style={{ width: 120 }}
         onChange={handleChange.bind(this, propName, type)}
         options={values.map(item => ({ label: item, value: item }))}
       />
     }
     if (type === Types.string) {
-      return <Input key={`${propName}_${type}`} defaultValue={data.defaultValue} placeholder={`请输入${data.name}`} onChange={handleChange.bind(this, propName, type)} />
+      return <Input key={key} defaultValue={value} placeholder={`请输入${data.name}`} onChange={handleChange.bind(this, propName, type)} />
     }
     if (type === Types.boolean) {
-      return <Checkbox key={`${propName}_${type}`} defaultValue={data.defaultValue} onChange={handleChange.bind(this, propName, type)}></Checkbox>
+      return <Checkbox key={key} defaultValue={value} onChange={handleChange.bind(this, propName, type)}></Checkbox>
     }
     if (type === Types.number) {
-      return <InputNumber key={`${propName}_${type}`} defaultValue={data.defaultValue} onChange={handleChange.bind(this, propName, type)} />
+      return <InputNumber key={key} ddefaultValue={value} onChange={handleChange.bind(this, propName, type)} />
     }
     return <CodeMirror
-      key={`${propName}_${type}`}
+      key={key}
       height="200px"
       theme="dark"
-      defaultValue={data.defaultValue}
+      defaultValue={value}
       extensions={[javascript({ jsx: true }), css()]}
       basicSetup={{
         lineNumbers: false,

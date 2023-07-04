@@ -1,10 +1,14 @@
 import React from 'react'
+import Code from './code'
 
 export function convertElement (ele) {
   if (typeof ele !== 'object' || !ele) {
     return ele
   }
   let { type, props } = ele
+  if (type === 'Code') {
+    type = Code
+  }
   // let result = { ...ele, _children: undefined }
   let children = undefined
   if (ele._children) {

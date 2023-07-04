@@ -96,6 +96,16 @@ function DomTree(props) {
     typeof props.onChange === 'function' && props.onChange({ ...newData[0] })
   }
 
+  const onSelect = key => {
+    let index = key[0].split('_')
+    let target = data
+    while(index.length) {
+      let curIndex = index.shift()
+      target = target === data ? target[curIndex] : target._children[curIndex]
+    }
+    typeof props.onSelect === 'function' && props.onSelect(target)
+  }
+
   return (
     <Tree
       // showLine
@@ -105,6 +115,7 @@ function DomTree(props) {
       autoExpandParent
       onDragEnter={onDragEnter}
       onDrop={onDrop}
+      onSelect={onSelect}
       treeData={treeData || []}
     />
   )

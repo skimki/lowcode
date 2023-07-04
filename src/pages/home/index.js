@@ -84,7 +84,7 @@ function App() {
     if (element.type) {
       setEditElement(element)
     }
-    e.stopPropagation()
+    e && e.stopPropagation()
   }
 
   const onPropsChange = (propName, val) => {
@@ -116,7 +116,7 @@ function App() {
           </div>)
         }
         {
-          currentMenu === 'Layouts' && <DomTree data={data} onChange={setData} />
+          currentMenu === 'Layouts' && <DomTree data={data} onChange={setData} onSelect={onComponentClick} />
         }
       </div>
       <div className="App-main">
@@ -131,7 +131,7 @@ function App() {
           {convertElement(data)}
         </div>
       </div>
-      {editElement && <Config data={ComponentConfig[editElement.type].config} onChange={onPropsChange} />}
+      {editElement && <Config data={ComponentConfig[editElement.type].config} element={editElement} onChange={onPropsChange} />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Button from './Button'
 import Text from './Text'
 import Container from './Container'
+import Code from './Code'
 
 const ComponentConfig = {
   // button: Button,
@@ -16,6 +17,10 @@ const ComponentConfig = {
   div: {
     name: '图层',
     config: Container
+  },
+  Code: {
+    name: '代码',
+    config: Code
   }
 }
 
